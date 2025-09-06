@@ -1,5 +1,7 @@
 create database smarthome;
 
+\c smarthome;
+
 -- Create the sensors table
 CREATE TABLE IF NOT EXISTS sensors (
     id SERIAL PRIMARY KEY,

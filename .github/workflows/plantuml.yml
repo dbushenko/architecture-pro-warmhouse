@@ -23,6 +23,9 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
+
+    - name: Install PlantUML
+      run: sudo apt-get install plantuml
         
     - name: Generate Diagrams
       run: |

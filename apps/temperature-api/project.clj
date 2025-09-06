@@ -8,7 +8,8 @@
                  [ring/ring-jetty-adapter "1.9.6"]
                  [ring/ring-json "0.5.1"]
                  [compojure "1.7.0"]
-                 [cheshire "5.11.0"]]
+                 [cheshire "5.11.0"]
+                 [clojure.java-time "1.2.0"]]
   :main ^:skip-aot temperature-api.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all

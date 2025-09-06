@@ -20,10 +20,11 @@
      :headers {"Content-Type" "application/json"}
      :body (json/generate-string {:status "ok"})})
 
-  (GET "/api/v1/temperature" []
+  (GET "/temperature/:id" [id]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (json/generate-string {:temperature (Double/parseDouble (get-current-temperature))})})
+     :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
+                                  :sensorId id})})
   
   (route/not-found "Not Found"))
 

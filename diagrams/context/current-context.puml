@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+
+Person(user, "Пользователь")
+System_Ext(sensor, "Датчик температуры")
+System_Ext(control, "Устройство отопления")
+System(system, "Система")
+
+Rel(user, system, "Получает и управляет температурой")
+Rel(system, sensor, "Получает данные о температуре")
+Rel(system, control, "Управляет температурой")
+
+@enduml

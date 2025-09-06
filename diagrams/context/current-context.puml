@@ -1,9 +1,9 @@
-@startuml
+@startuml "Тёплый дом - Контекст"
+!include ../C4_Context.puml
+
 title "Тёплый дом"
 
 top to bottom direction
-
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 Person(user, "Пользователь", "Владелец умного дома")
 System(system, "Тёплый дом", "Система управления датчиками и отопительными устройствами")
@@ -12,7 +12,7 @@ System_Ext(sensor, "Датчик температуры", "Позволяет о
 System_Ext(device, "Отопительное устройство", "Может нагреть помещение")
 
 Rel(user, system, "Управляет своим умным домом")
-Rel(system,sensor,"Получает температуру")
-Rel(system,device,"Нагревает помещение")
+Rel(system, sensor, "Получает температуру")
+Rel(system, device, "Нагревает помещение")
 
 @enduml

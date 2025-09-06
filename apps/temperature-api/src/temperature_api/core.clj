@@ -26,6 +26,12 @@
      :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
                                   :sensorId id})})
   
+  (GET "/temperature" [location]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
+                                  :location location})})
+  
   (route/not-found "Not Found"))
 
 (defn app []

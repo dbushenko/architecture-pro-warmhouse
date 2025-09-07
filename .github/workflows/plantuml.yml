@@ -34,7 +34,7 @@ jobs:
     - name: Generate Diagrams
       run: |
         java -jar diagrams/plantuml.jar diagrams/context/*.puml
-        # java -jar diagrams/plantuml.jar diagrams/container/*.puml
+        java -jar diagrams/plantuml.jar diagrams/container/*.puml
         # java -jar diagrams/plantuml.jar diagrams/component/*.puml
         # java -jar diagrams/plantuml.jar diagrams/code/*.puml
 

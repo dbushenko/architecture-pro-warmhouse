@@ -10,7 +10,7 @@ System_Ext(d, "Heater", "Обогреватель")
 
 SystemQueue(kafka, "Kafka")
 
-Container(device_controller, "Device Controller Service", "Java, Spring") {
+Container(device_controller, "Legacy Adapter Service", "Java, Spring") {
     Component(ls, "Kafka Listener", "Интерфейс для взаимодействия с Device Controller")
     Component(qs, "QueryService", "Запрашивает данные из устройств")
     Component(cs, "CommandService", "Отправляет команды в устройства")

@@ -122,13 +122,15 @@
 
 **Диаграмма компонентов (Components)**
 
-![Диаграмма компонентов сервиса "Device controller"](diagrams/container/next-component-device-control.png)
-![Диаграмма компонентов сервиса "Legacy adapter"](diagrams/container/next-component-legacy-adapter.png)
+![Диаграмма компонентов сервиса "Device controller"](diagrams/component/next-component-device-control.png)
+
+![Диаграмма компонентов сервиса "Legacy adapter"](diagrams/component/next-component-legacy-adapter.png)
 
 **Диаграмма кода (Code)**
 
-![Диаграмма кода сервиса "Device controller"](diagrams/container/next-code-device-control.png)
-![Диаграмма кода сервиса "Legacy adapter"](diagrams/container/next-code-legacy-adapter.png)
+![Диаграмма кода сервиса "Device controller"](diagrams/code/next-code-device-control.png)
+
+![Диаграмма кода сервиса "Legacy adapter"](diagrams/code/next-code-legacy-adapter.png)
 
 # Задание 3. Разработка ER-диаграммы
 

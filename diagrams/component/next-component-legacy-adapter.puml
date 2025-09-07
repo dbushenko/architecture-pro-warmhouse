@@ -1,4 +1,4 @@
-@startuml "next-component-device-control"
+@startuml "next-component-legacy-adapter"
 !include ../C4_Component.puml
 
 title "Компоненты сервиса Legacy Adapter"

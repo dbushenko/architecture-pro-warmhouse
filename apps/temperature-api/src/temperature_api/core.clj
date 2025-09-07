@@ -4,7 +4,21 @@
             [compojure.route :as route]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.json :as middleware]
+            [ring.middleware.params :refer [wrap-params]] ; <-- 1. ДОБАВИТЬ ЭТО
             [cheshire.core :as json]))
+
+(def locations
+{"1" "Living Room"
+ "2" "Bedroom"
+ "3" "Kitchen"
+ :default "Unknown" })
+
+(def sensors
+  {"Living Room" "1"
+   "Bedroom" "2"
+   "Kitchen" "3"
+ :default "0" })
+
 
 (defn get-current-temperature []
   "Simulates fetching temperature from a sensor.
@@ -24,21 +38,25 @@
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
-                                  :sensorId id})})
+                                  :sensorId id
+                                  :location (or (get locations (str id)) (:default locations))})})
   
-  (GET "/temperature" [location]
-    {:status 200
-     :headers {"Content-Type" "application/json"}
-     :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
-                                  :location location})})
+  (GET "/temperature" request
+    (let [location (get-in request [:params "location"])]
+      {:status 200
+       :headers {"Content-Type" "application/json"}
+       :body (json/generate-string {:value (Double/parseDouble (get-current-temperature))
+                                    :location location
+                                    :sensorId (or (get sensors location) (:default sensors))})}))
   
   (route/not-found "Not Found"))
 
 (defn app []
   (-> (routes app-routes)
+      (wrap-params {:keywords? true})
       (middleware/wrap-json-body {:keywords? true})
       (middleware/wrap-json-response)))
 
 (defn -main [& args]
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "8081"))]
+  (let [port (or (first args) (Integer/parseInt (or (System/getenv "PORT") "8081")))]
     (jetty/run-jetty (app) {:port port})))

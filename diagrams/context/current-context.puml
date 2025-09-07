@@ -1,4 +1,4 @@
-@startuml "current-warmhouse-context"
+@startuml "current-context"
 !include ../C4_Context.puml
 
 title "Тёплый дом"

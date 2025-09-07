@@ -1,0 +1,31 @@
+@startuml "next-component-device-control"
+!include ../C4_Component.puml
+
+title "Компоненты сервиса Device Controller"
+
+left to right direction
+
+SystemQueue(kafka, "Kafka")
+System_Ext(s, "Sensor", "Датчик")
+
+Container(device_controller, "Device Controller Service", "Java, Spring") {
+    Component(ks, "LegacyService", "Отправляет команды в legacy")
+    Component(controller, "DeviceController", "REST-интерфейс для команд от BFF")
+    Component(qs, "QueryService", "Запрашивает данные из устройств")
+    Component(cs, "CommandService", "Отправляет команды в устройства")
+    Component(sc, "Scheduler", "Регулярно опрашивает датчики")
+
+}
+
+System_Ext(d, "Device", "Управляемое устройство")
+
+Rel(controller, qs, "")
+Rel(controller, cs, "")
+Rel(cs, ks, "")
+Rel(ks, kafka, "Отправляет команды в legacy-сервис smart_home")
+Rel(cs, d, "")
+Rel(qs, s, "")
+Rel(sc,qs,"")
+Rel(sc,kafka,"Отправляет данные из датчиков в BFF на кэширование")
+
+@enduml

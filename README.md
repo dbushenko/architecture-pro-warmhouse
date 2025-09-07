@@ -110,14 +110,25 @@
 
 ![Диаграмма контейнеров системы "Умный дом"](diagrams/container/next-container.png)
 
+Основная техническая задача здесь -- интеграция с существующим legacy-решением. Здесь это реализовано с применением очереди очереди сообщений следующим образом.
+
+*BFF* посылает команды на *Device Controller*, который знает, каким образом управлять известными ему устройствами: датчиками, лампами, замками, камерами. Если тип используемого устройства -- датчик температуры или устройство отопления, то *Device Controller* посылает сообщение в *Kafka*.
+
+*Legacy Adapter* получает сообщение из *Kafka* и делает запрос на legacy-сервис smart_home.
+
+Кроме того, *Legacy Adapter*, а также *Device Controller* регулярно опрашивают все датчики. Новые значения отправляются в *Kafka*, откуда их забирает *BFF* и регистрирует в *Redis*.
+
+Когда приложение только стартует, и *Redis* не содержит данных из датчиков, *BFF* отправляет в *Device Controller* и *Legacy Adapter* через *Kafka* специальную команду на опрос всех датчиков.
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+![Диаграмма компонентов сервиса "Device controller"](diagrams/container/next-component-device-control.png)
+![Диаграмма компонентов сервиса "Legacy adapter"](diagrams/container/next-component-legacy-adapter.png)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+![Диаграмма кода сервиса "Device controller"](diagrams/container/next-code-device-control.png)
+![Диаграмма кода сервиса "Legacy adapter"](diagrams/container/next-code-legacy-adapter.png)
 
 # Задание 3. Разработка ER-диаграммы
 

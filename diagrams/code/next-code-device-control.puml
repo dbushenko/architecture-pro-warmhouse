@@ -1,0 +1,72 @@
+@startuml
+title Device Controller Code Diagram
+
+top to bottom direction
+
+class DeviceController {
++ query(userId, deviceId);
++ command(userId, deviceId, command, parameters);
+}
+
+class Scheduler {
+}
+
+interface QueryService {
++ query(deviceId);
+}
+
+interface CommandService {
++ command(deviceId, command, parameters);
+}
+
+DeviceController --> QueryService : uses
+Scheduler --> QueryService : uses
+DeviceController --> CommandService : uses
+
+
+class LightQueryServiceImpl {
++ query(deviceId);
+}
+
+LightQueryServiceImpl --|> QueryService
+
+class LockQueryServiceImpl {
++ query(deviceId);
+}
+
+LockQueryServiceImpl --|> QueryService
+
+class TemprQueryServiceImpl {
++ query(deviceId);
+}
+
+TemprQueryServiceImpl --|> QueryService
+
+class LightCommandServiceImpl {
++ command(deviceId, command, parameters);
+}
+
+LightCommandServiceImpl --|> CommandService
+
+class LockCommandServiceImpl {
++ command(deviceId, command, parameters);
+}
+
+LockCommandServiceImpl --|> CommandService
+
+class TemprCommandServiceImpl {
++ command(deviceId, command, parameters);
+}
+
+TemprCommandServiceImpl --|> CommandService
+
+class QueueService {
++ sendCommand(deviceId, command, parameters);
++ sendData(deviceId, value, datetime);
++ sendState(deviceId, state, datetime);
+}
+
+TemprCommandServiceImpl --> QueueService : uses
+Scheduler --> QueueService : uses
+
+@enduml

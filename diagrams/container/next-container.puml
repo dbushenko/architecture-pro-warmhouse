@@ -35,7 +35,7 @@ Container_Boundary(smart_house, "Умный дом") {
   Container(userprofile, "User Profile", "service", "Хранит данные пользователя и конфигурации его умного дома")
   ContainerDb(userprofiledb, "User Profile DB", "PostgreSQL")
 
-  ContainerDb(redis, "Данные из датчиков", "Redis", "Кэш всех данных из всех датчиков")
+  ContainerDb(redis, "Данные из датчиков", "Redis", "Кэш всех данных из всех датчиков, а также -- состояние всех устройств")
 
   Container(subscr, "Subscription", "service", "Регистрирует подписки пользователя")
   ContainerDb(subscrdb, "Subscription DB", "PostgreSQL")
@@ -63,7 +63,7 @@ Rel(smart_home, sensor_temp, "")
 Rel(smart_home, device_temp, "")
 
 Rel(smart_home, smart_home_db, "")
-Rel(bff, kafka, "Посылает команды в legacy")
+Rel(devcontrol, kafka, "1) Посылает команды в legacy 2) посылает данные датчиков на bff в кэш")
 Rel(kafka, smart_home_adapter, "Получает команды в legacy")
 Rel(smart_home_adapter, smart_home, "Выполняет REST-запросы, по таймеру получает данные датчиков")
 Rel(smart_home_adapter, kafka, "Посылает данные из датчиков для регистрации в Redis")

@@ -51,8 +51,77 @@ services:
     networks:
       - smarthome-network
 
+  broker:
+    image: 'bitnami/kafka:latest'
+    container_name: broker
+    restart: always
+    ports:
+      - "9092:9092"
+    networks:
+      - smarthome-network
+    volumes:
+      - 'kafka_data:/bitnami/kafka' # Bitnami images use this path for data
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@broker:9093
+      # Bitnami-specific settings to enable KRaft
+      - KAFKA_ENABLE_KRAFT=yes
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  device-controller:
+    build:
+      context: ./device-controller
+      dockerfile: Dockerfile
+    container_name: device-controller
+    depends_on:
+      broker:
+        condition: service_healthy # Wait for Kafka to be ready
+      temperature-api:
+        condition: service_started # This one can just be started
+    environment:
+      - PORT=8083
+      - KAFKA_BROKERS=broker:9092
+      - TEMPERATURE_API_URL=http://temperature-api:8081
+      - SMART_HOME_URL=http://app:8080
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+  legacy-adapter:
+    build:
+      context: ./legacy-adapter
+      dockerfile: Dockerfile
+    container_name: legacy-adapter
+    depends_on:
+      broker:
+        condition: service_healthy
+      app:
+        condition: service_started
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - LEGACY_ADAPTER_SMART_HOME_URL=http://app:8080
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+      
 volumes:
   postgres_data:
+  kafka_data: # Define the named volume
 
 networks:
   smarthome-network:

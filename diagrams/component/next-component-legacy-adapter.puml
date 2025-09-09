@@ -1,0 +1,28 @@
+@startuml "next-component-legacy-adapter"
+!include ../C4_Component.puml
+
+title "Компоненты сервиса Legacy Adapter"
+
+left to right direction
+
+System_Ext(s, "Sensor", "Датчик температуры")
+System_Ext(d, "Heater", "Обогреватель")
+
+SystemQueue(kafka, "Kafka")
+
+Container(device_controller, "Legacy Adapter Service", "Java, Spring") {
+    Component(ls, "Kafka Listener", "Интерфейс для взаимодействия с Device Controller")
+    Component(qs, "QueryService", "Запрашивает данные из устройств")
+    Component(cs, "CommandService", "Отправляет команды в устройства")
+    Component(sc, "Scheduler", "Регулярно опрашивает датчики")
+}
+
+Rel(ls, qs, "")
+Rel(ls, cs, "")
+Rel(cs, d, "")
+Rel(qs, s, "")
+Rel(sc,qs,"")
+Rel(sc,kafka,"Отправляет данные из датчиков в BFF на кэширование")
+Rel(kafka, ls, "Команды из Device Controller")
+
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+title Legacy Adapter Code Diagram
+
+top to bottom direction
+
+class Listener {
++ listen(userId, deviceId, command, parameters);
+}
+
+class Scheduler {
+}
+
+class QueryService {
++ query(deviceId);
+}
+
+class CommandService {
++ command(deviceId, command, parameters);
+}
+
+Scheduler --> QueryService : uses
+Listener --> CommandService : uses
+
+class QueueService {
++ sendData(deviceId, value, datetime);
++ sendState(deviceId, state, datetime);
+}
+
+Scheduler --> QueueService : uses
+
+@enduml

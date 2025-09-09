@@ -1,0 +1,120 @@
+@startuml "next-container"
+!include ../C4_Container.puml
+
+title "Умный дом"
+
+left to right direction
+
+Person(user, "Пользователь", "Пользователь умного дома")
+Person(support, "Техподдержка", "Техподдержка умного дома")
+System(smart_house, "Сервисы системы умного дома")
+
+System_Ext(sensor, "Датчик", "Позволяет определить простые параметры, такие как освещенность и т.д.")
+System_Ext(device, "Управляющее устройство", "Может включить/выключить или послать команду в устройство света, замка и т.д.")
+
+System_Ext(payments_system, "Платежная система", "Позволяет принимать оплату от пользователей")
+
+
+System_Ext(sensor_temp, "Датчик температуры", "Позволяет определить температуру")
+System_Ext(device_temp, "Отопителное устройство", "Может включить/выключить отопление")
+
+Container_Boundary(smart_house, "Умный дом") {
+  Container(mobileapp, "Мобильная версия умного дома", "mobile ui")
+  Container(supportapp, "Приложение для техподдержки", "web ui")
+  Container(webapp, "Web-версия умного дома", "web ui")
+
+  Container(bff, "BFF для пользователя", "service")
+  Container(supportbff, "BFF для техподдержки", "service")
+
+  Container(devregister, "Device Registry", "service", "Регистрирует устройства всех типов")
+  ContainerDb(devregisterdb, "Устройства", "PostgreSQL")
+
+  System(auth, "Keycloak", "Система регистрации, идентификации и авторизации пользователей")
+  Container(devcontrol, "Device Control", "service", "Управляет всеми устройствами")
+
+  Container(userprofile, "User Profile", "service", "Хранит данные пользователя и конфигурации его умного дома")
+  ContainerDb(userprofiledb, "User Profile DB", "PostgreSQL")
+
+  ContainerDb(redis, "Данные из датчиков", "Redis", "Кэш всех данных из всех датчиков, а также -- состояние всех устройств")
+
+  Container(subscr, "Subscription", "service", "Регистрирует подписки пользователя")
+  ContainerDb(subscrdb, "Subscription DB", "PostgreSQL")
+
+  Container(requests, "Requests", "service", "Регистрирует и обрабатывает запросы пользователей на техподдержку")
+  ContainerDb(requestsdb, "Requests DB", "PostgreSQL")
+
+  Container(payments, "Payments", "service", "Обрабатывает платежи")
+  ContainerDb(paymentsdb, "Payments DB", "PostgreSQL")
+
+  Container(rules, "Rules Engine", "service", "Выполняет правила обработки данных из датчиков")
+  ContainerDb(rulesdb, "Rules Enigine DB", "PostgreSQL", "Хранит правила для каждого пользователя")
+
+  Container(mediacontrol, "Media Control", "service", "Управляет видеонаблюдением")
+  System(mtx, "MediaMTX", "Преобразует данные из веб-камер в видеопоток")
+  System(minio, "MinIO",  "Хранит видео записи")
+
+  SystemQueue(kafka, "Kafka")
+  Container(smart_home, "Smart Home", "service", "Legacy, управляет отоплением")
+  ContainerDb(smart_home_db, "Smart Home DB", "PostgreSQL")
+  Container(smart_home_adapter, "Legacy Adapter", "service", "Адаптирует команды из bff до smart_home")
+}
+
+Rel(smart_home, sensor_temp, "")
+Rel(smart_home, device_temp, "")
+
+Rel(smart_home, smart_home_db, "")
+Rel(devcontrol, kafka, "1) Посылает команды в legacy 2) посылает данные датчиков на bff в кэш")
+Rel(kafka, smart_home_adapter, "Получает команды в legacy")
+Rel(smart_home_adapter, smart_home, "Выполняет REST-запросы, по таймеру получает данные датчиков")
+Rel(smart_home_adapter, kafka, "Посылает данные из датчиков для регистрации в Redis")
+Rel(kafka, bff, "Посылает данные из датчиков для регистрации в Redis")
+
+Rel(bff, mediacontrol, "Получает видео с камер")
+Rel(mediacontrol, mtx, "Управляет медиасервером")
+Rel(mediacontrol, devcontrol, "Управляет камерами")
+Rel(mediacontrol, minio, "Сохраняет видео файлы")
+Rel(webapp, mtx, "Получает видеопоток")
+Rel(mobileapp, mtx, "Получает видеопоток")
+
+Rel(user, webapp, "Использует систему")
+Rel(user, mobileapp, "Использует систему")
+Rel(support, supportapp, "Выполняет техподдержку")
+Rel(mobileapp, bff, "Выполняет запросы")
+Rel(webapp, bff, "Выполняет запросы")
+Rel(supportapp, supportbff, "Выполняет запросы")
+Rel(bff, devregister, "Регистрирует устройства, получает информацию")
+Rel(supportbff, devregister, "Получает информацию")
+Rel(devcontrol, devregister, "Получает информацию")
+Rel(devregister, devregisterdb, "Регистрирует устройства информацию")
+Rel(bff, devcontrol, "Посылает команды от пользователя")
+Rel(devcontrol, sensor, "Запрашивает данные")
+Rel(devcontrol, device, "Отправляет команды")
+
+Rel(bff, auth, "Регистрирует, идентифицирует, авторизует пользователей")
+Rel(supportbff, auth, "Идентифицирует и авторизует техподдержку")
+Rel(bff, redis, "Регистрирует/ получает данные из датчиков")
+
+Rel(subscr, subscrdb, "Регистрирует/ получает данные о подписках")
+Rel(bff, subscr, "Регистрирует/ получает подписки пользователя")
+Rel(supportbff, subscr, "Получает подписки пользователя")
+
+Rel(userprofile, userprofiledb, "Регистрирует/ получает данные пользователя")
+Rel(bff, userprofile, "Регистрирует/ получает данные пользователя")
+Rel(supportbff, userprofile, "Получает данные пользователя")
+
+Rel(requests, requestsdb, "Регистрирует запросы пользователя")
+Rel(supportbff, requests, "Получает запросы пользователя")
+Rel(bff, requests, "Регистрирует запросы пользователя")
+
+Rel(bff, payments, "Оплачивает подписку, получает информацию об оплатах")
+Rel(supportbff, payments, "Запрашивает данные оплат")
+Rel(payments, paymentsdb, "Хранит данные об оплатах")
+Rel(payments, payments_system, "Проводит платежи")
+
+Rel(rules, rulesdb, "Хранит правила")
+Rel(bff, rules, "Регистрирует правила")
+Rel(supportbff, rules, "Просматривает правила")
+Rel(rules, redis, "Получает данные")
+Rel(rules, devcontrol, "Управляет устройствами")
+
+@enduml

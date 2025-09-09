@@ -1,0 +1,111 @@
+asyncapi: 3.0.0
+info:
+  title: Legacy Adapter API
+  version: 1.0.0
+  description: |
+    This service connects to a Kafka instance to send and receive messages
+    about legacy smart home devices.
+servers:
+  kafka:
+    host: 'kafka:9092'
+    protocol: kafka
+    description: Local Kafka broker
+channels:
+  temperature-commands:
+    address: temperature-commands
+    messages:
+      subscribe.message:
+        $ref: '#/components/messages/DeviceCommand'
+  temperature-updates:
+    address: temperature-updates
+    messages:
+      publish.message:
+        $ref: '#/components/messages/TemperatureUpdate'
+operations:
+  temperature-commands.subscribe:
+    action: send
+    channel:
+      $ref: '#/channels/temperature-commands'
+    summary: Receive commands for temperature devices.
+    messages:
+      - $ref: '#/channels/temperature-commands/messages/subscribe.message'
+  temperature-updates.publish:
+    action: receive
+    channel:
+      $ref: '#/channels/temperature-updates'
+    summary: Publish updates from temperature sensors.
+    messages:
+      - $ref: '#/channels/temperature-updates/messages/publish.message'
+components:
+  messages:
+    DeviceCommand:
+      name: DeviceCommand
+      title: Device Command
+      summary: A command to be sent to a legacy device.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceCommandPayload'
+    TemperatureUpdate:
+      name: TemperatureUpdate
+      title: Temperature Update
+      summary: An update containing data from multiple temperature sensors.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TemperatureUpdatePayload'
+  schemas:
+    DeviceCommandPayload:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: ID of the target device.
+        command:
+          type: string
+          description: The command to execute.
+          enum:
+            - set_temp
+            - get_status
+        targetTemperature:
+          type: number
+          format: double
+          description: The target temperature to set.
+      example:
+        deviceId: thermostat-1
+        command: set_temp
+        targetTemperature: 23.5
+    TemperatureUpdatePayload:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          type:
+            type: string
+          location:
+            type: string
+          value:
+            type: number
+            format: double
+          unit:
+            type: string
+          status:
+            type: string
+          last_updated:
+            type: string
+            format: date-time
+          created_at:
+            type: string
+            format: date-time
+      example:
+        - id: 1
+          name: Living Room Sensor
+          type: temperature
+          location: Living Room
+          value": 21.5
+          unit: C
+          status: active
+          last_updated: '2025-09-09T10:00:00Z'
+          created_at: '2025-09-01T12:00:00Z'

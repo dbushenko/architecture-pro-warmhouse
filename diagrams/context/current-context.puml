@@ -1,0 +1,18 @@
+@startuml "current-context"
+!include ../C4_Context.puml
+
+title "Тёплый дом"
+
+top to bottom direction
+
+Person(user, "Пользователь", "Владелец умного дома")
+System(system, "Тёплый дом", "Система управления датчиками и отопительными устройствами")
+
+System_Ext(sensor, "Датчик температуры", "Позволяет определить температуру в помещении")
+System_Ext(device, "Отопительное устройство", "Может нагреть помещение")
+
+Rel(user, system, "Управляет своим умным домом")
+Rel(system, sensor, "Получает температуру")
+Rel(system, device, "Нагревает помещение")
+
+@enduml

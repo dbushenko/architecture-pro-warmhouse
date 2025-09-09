@@ -1,0 +1,75 @@
+@startuml ER_Diagram
+
+!define table(x) class x << (T, #FFAAAA) >>
+!define primary_key(x) <b>x</b>
+!define foreign_key(x) <i>x</i>
+
+hide circle
+skinparam linetype ortho
+
+table(User) {
+  primary_key(id): UUID
+  --
+  name: VARCHAR(255)
+  email: VARCHAR(255)
+  password_hash: VARCHAR(255)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+table(House) {
+  primary_key(id): UUID
+  --
+  foreign_key(user_id): UUID
+  name: VARCHAR(255)
+  address: TEXT
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+table(DeviceType) {
+  primary_key(id): UUID
+  --
+  name: VARCHAR(100)
+  description: TEXT
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+table(Device) {
+  primary_key(id): UUID
+  --
+  foreign_key(type_id): UUID
+  foreign_key(house_id): UUID
+  name: VARCHAR(255)
+  serial_number: VARCHAR(255)
+  status: VARCHAR(50)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+table(Module) {
+  primary_key(id): UUID
+  --
+  foreign_key(device_id): UUID
+  type: VARCHAR(100)
+  status: VARCHAR(50)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+table(TelemetryData) {
+  primary_key(id): BIGINT
+  --
+  foreign_key(device_id): UUID
+  timestamp: TIMESTAMP
+  payload: JSONB
+}
+
+User ||--o{ House
+House ||--o{ Device
+DeviceType ||--o{ Device
+Device ||--o{ Module
+Device ||--o{ TelemetryData
+
+@enduml

@@ -1,0 +1,254 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Device Control API",
+    "description": "A collection for testing the Device Control API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Check if the Device Control API is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Command",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceId\": \"temp-001\",\n  \"type\": \"temp\",\n  \"command\": \"set_temperature\",\n  \"targetTemperature\": 22.5,\n  \"timestamp\": \"2025-09-08T18:39:21.218Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/command",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "command"
+          ]
+        },
+        "description": "Send a command to a device"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Temperature Value Update Command",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceId\": \"temp-001\",\n  \"type\": \"temp\",\n  \"value\": 22.5,\n  \"status\": \"active\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/command",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "command"
+          ]
+        },
+        "description": "Send a temperature value update command to a device"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Light Command",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceId\": \"light-001\",\n  \"type\": \"light\",\n  \"command\": \"turn_on\",\n  \"brightness\": 75\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/command",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "command"
+          ]
+        },
+        "description": "Send a command to a light device"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Lock Command",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceId\": \"lock-001\",\n  \"type\": \"lock\",\n  \"command\": \"lock\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/command",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "command"
+          ]
+        },
+        "description": "Send a command to a lock device"
+      },
+      "response": []
+    },
+    {
+      "name": "Query Temperature Sensor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/query?type=temp&sensorId=temp-001",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "query"
+          ],
+          "query": [
+            {
+              "key": "type",
+              "value": "temp"
+            },
+            {
+              "key": "sensorId",
+              "value": "temp-001"
+            }
+          ]
+        },
+        "description": "Query a temperature sensor"
+      },
+      "response": []
+    },
+    {
+      "name": "Query Light Device",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/query?type=light&deviceId=light-001",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "query"
+          ],
+          "query": [
+            {
+              "key": "type",
+              "value": "light"
+            },
+            {
+              "key": "deviceId",
+              "value": "light-001"
+            }
+          ]
+        },
+        "description": "Query a light device"
+      },
+      "response": []
+    },
+    {
+      "name": "Query Lock Device",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/query?type=lock&deviceId=lock-001",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "query"
+          ],
+          "query": [
+            {
+              "key": "type",
+              "value": "lock"
+            },
+            {
+              "key": "deviceId",
+              "value": "lock-001"
+            }
+          ]
+        },
+        "description": "Query a lock device"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083",
+      "type": "string"
+    }
+  ]
+}

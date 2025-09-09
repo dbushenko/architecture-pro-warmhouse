@@ -134,7 +134,7 @@
 
 # Задание 3. Разработка ER-диаграммы
 
-Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
+![Диаграмма кода сервиса "Legacy adapter"](diagrams/er/ER_Diagram.png)
 
 # Задание 4. Создание и документирование API
 
@@ -144,7 +144,13 @@
 
 ### 2. Документация API
 
-Здесь приложите ссылки на документацию API для микросервисов, которые вы спроектировали в первой части проектной работы. Для документирования используйте Swagger/OpenAPI или AsyncAPI.
+#### 2.1. Device Control API
+
+- [Device Controller API (OpenAPI)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/dbushenko/architecture-pro-warmhouse/warmhouse/schemas/device-control-openapi.yaml)
+
+#### 2.2. Legacy Adapter API
+
+- [Legacy Adapter API (AsyncAPI)](https://studio.asyncapi.com/playground?url=https://raw.githubusercontent.com/dbushenko/architecture-pro-warmhouse/warmhouse/schemas/legacy-adapter-asyncapi.yaml)
 
 # Задание 5. Работа с docker и docker-compose
 

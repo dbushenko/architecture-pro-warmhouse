@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: "Device Controller API"
+  description: "API for controlling smart home devices"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:3000"
+    description: "Local development server"
+paths:
+  /query:
+    get:
+      summary: "Query device status"
+      description: "Retrieves the status or data from a specific type of device."
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: "The type of device to query."
+          schema:
+            type: string
+            enum: [temp, light, lock]
+      responses:
+        "200":
+          description: "Successful response with device data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Data retrieved successfully"
+                  data:
+                    type: object
+        "400":
+          description: "Invalid request parameters."
+        "500":
+          description: "Internal server error."
+  /command:
+    post:
+      summary: "Send a command to a device"
+      description: "Sends a command to a device, with the payload depending on the device type."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/TempCommand"
+                - $ref: "#/components/schemas/LightCommand"
+                - $ref: "#/components/schemas/LockCommand"
+              discriminator:
+                propertyName: type
+      responses:
+        "200":
+          description: "Command successfully sent."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Command processed successfully"
+        "400":
+          description: "Invalid command format."
+        "500":
+          description: "Internal server error."
+
+components:
+  schemas:
+    TempCommand:
+      type: object
+      required:
+        - type
+        - deviceId
+        - command
+      properties:
+        type:
+          type: string
+          enum: [temp]
+        deviceId:
+          type: string
+          description: "Unique identifier for the temperature device."
+        command:
+          type: string
+          description: "Command to execute on the temperature device."
+          enum: [set_temp, get_status]
+        targetTemperature:
+          type: number
+          format: float
+          description: "The target temperature to set (required for 'set_temp')."
+      example:
+        type: "temp"
+        deviceId: "thermostat-123"
+        command: "set_temp"
+        targetTemperature: 22.5
+
+    LightCommand:
+      type: object
+      required:
+        - type
+        - deviceId
+        - command
+      properties:
+        type:
+          type: string
+          enum: [light]
+        deviceId:
+          type: string
+          description: "Unique identifier for the light device."
+        command:
+          type: string
+          description: "Command to execute on the light device."
+          enum: [turn_on, turn_off, get_status]
+      example:
+        type: "light"
+        deviceId: "light-abc"
+        command: "turn_on"
+
+    LockCommand:
+      type: object
+      required:
+        - type
+        - deviceId
+        - command
+      properties:
+        type:
+          type: string
+          enum: [lock]
+        deviceId:
+          type: string
+          description: "Unique identifier for the lock device."
+        command:
+          type: string
+          description: "Command to execute on the lock device."
+          enum: [lock, unlock, get_status]
+      example:
+        type: "lock"
+        deviceId: "door-lock-xyz"
+        command: "lock"

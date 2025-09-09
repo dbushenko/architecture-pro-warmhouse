@@ -1,7 +1,10 @@
 import express from 'express';
+import cors from 'cors';
 import deviceRoutes from './routes/deviceRoutes';
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 

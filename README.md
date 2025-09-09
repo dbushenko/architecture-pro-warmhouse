@@ -146,7 +146,7 @@
 
 #### 2.1. Device Control API
 
-- [Device Controller API (OpenAPI)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/dbushenko/architecture-pro-warmhouse/warmhouse/schemas/device-control-openapi.yaml)
+- [Device Controller API (OpenAPI)](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/dbushenko/architecture-pro-warmhouse/warmhouse/schemas/device-control-openapi.yaml)
 
 #### 2.2. Legacy Adapter API
 

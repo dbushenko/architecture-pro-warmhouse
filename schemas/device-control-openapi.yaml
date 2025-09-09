@@ -6,40 +6,67 @@ info:
 servers:
   - url: "http://localhost:3000"
     description: "Local development server"
+
 paths:
-  /query:
+  /health:
     get:
-      summary: "Query device status"
-      description: "Retrieves the status or data from a specific type of device."
-      parameters:
-        - name: type
-          in: query
-          required: true
-          description: "The type of device to query."
-          schema:
-            type: string
-            enum: [temp, light, lock]
+      summary: "Health check"
+      description: "Check if the API is running"
       responses:
         "200":
-          description: "Successful response with device data."
+          description: "API is running"
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  status:
                     type: string
-                    example: "Data retrieved successfully"
-                  data:
-                    type: object
+                    example: "ok"
+
+  /query:
+    get:
+      summary: "Query device status"
+      description: "Retrieves status or data from a device."
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: "Device type."
+          schema:
+            type: string
+            enum: [temp, light, lock]
+        - name: sensorId
+          in: query
+          required: false
+          description: "Sensor ID (for temp)."
+          schema:
+            type: string
+        - name: deviceId
+          in: query
+          required: false
+          description: "Device ID (for light/lock)."
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/TempQueryResponse"
+                  - $ref: "#/components/schemas/LightQueryResponse"
+                  - $ref: "#/components/schemas/LockQueryResponse"
         "400":
-          description: "Invalid request parameters."
+          description: "Invalid parameters."
         "500":
           description: "Internal server error."
+
   /command:
     post:
-      summary: "Send a command to a device"
-      description: "Sends a command to a device, with the payload depending on the device type."
+      summary: "Send a command"
+      description: "Sends a command to a device."
       requestBody:
         required: true
         content:
@@ -47,13 +74,14 @@ paths:
             schema:
               oneOf:
                 - $ref: "#/components/schemas/TempCommand"
+                - $ref: "#/components/schemas/TempPatchCommand"
                 - $ref: "#/components/schemas/LightCommand"
                 - $ref: "#/components/schemas/LockCommand"
               discriminator:
                 propertyName: type
       responses:
         "200":
-          description: "Command successfully sent."
+          description: "Command sent."
           content:
             application/json:
               schema:
@@ -61,7 +89,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Command processed successfully"
+                    example: "Command processed"
         "400":
           description: "Invalid command format."
         "500":
@@ -81,19 +109,19 @@ components:
           enum: [temp]
         deviceId:
           type: string
-          description: "Unique identifier for the temperature device."
+          description: "Temperature device ID."
         command:
           type: string
-          description: "Command to execute on the temperature device."
-          enum: [set_temp, get_status]
+          description: "Command for temperature device."
+          enum: [set_temperature, get_status]
         targetTemperature:
           type: number
           format: float
-          description: "The target temperature to set (required for 'set_temp')."
+          description: "Target temperature (for 'set_temperature')."
       example:
         type: "temp"
         deviceId: "thermostat-123"
-        command: "set_temp"
+        command: "set_temperature"
         targetTemperature: 22.5
 
     LightCommand:
@@ -108,15 +136,17 @@ components:
           enum: [light]
         deviceId:
           type: string
-          description: "Unique identifier for the light device."
+          description: "Light device ID."
         command:
           type: string
-          description: "Command to execute on the light device."
+          description: "Command for light device."
           enum: [turn_on, turn_off, get_status]
+      additionalProperties: true
       example:
         type: "light"
         deviceId: "light-abc"
         command: "turn_on"
+        brightness: 75
 
     LockCommand:
       type: object
@@ -130,12 +160,92 @@ components:
           enum: [lock]
         deviceId:
           type: string
-          description: "Unique identifier for the lock device."
+          description: "Lock device ID."
         command:
           type: string
-          description: "Command to execute on the lock device."
+          description: "Command for lock device."
           enum: [lock, unlock, get_status]
       example:
         type: "lock"
         deviceId: "door-lock-xyz"
         command: "lock"
+
+    TempPatchCommand:
+      type: object
+      required:
+        - type
+        - deviceId
+        - value
+        - status
+      properties:
+        type:
+          type: string
+          enum: [temp]
+        deviceId:
+          type: string
+          description: "Temperature device ID."
+        value:
+          type: number
+          format: float
+          description: "Temperature value."
+        status:
+          type: string
+          description: "Device status."
+      example:
+        type: "temp"
+        deviceId: "temp-001"
+        value: 22.5
+        status: "active"
+
+    TempQueryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        value:
+          type: number
+          format: float
+        unit:
+          type: string
+        status:
+          type: string
+        last_updated:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    LightQueryResponse:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        type:
+          type: string
+          enum: [LIGHT]
+        status:
+          type: string
+          enum: [ON, OFF]
+        brightness:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    LockQueryResponse:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        type:
+          type: string
+          enum: [LOCK]
+        status:
+          type: string
+          enum: [LOCKED, UNLOCKED]
